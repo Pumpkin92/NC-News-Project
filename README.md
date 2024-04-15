@@ -11,3 +11,14 @@ test - to run the testing suite
 prepare - to install Husky
 
 To ensure the databse is kept secure, two .env files will need to be set up with the database name. These files are git ignored, to ensure the safety of the database.
+
+Dependancies
+dot env
+express
+PG
+
+Dev Dependancies
+Husky
+Jest
+PG Format
+Supertest
