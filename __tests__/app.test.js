@@ -46,3 +46,39 @@ describe("/api", () => {
       });
   });
 });
+
+describe("/api/articles/:article_id", () => {
+  test("GET 200 Responds with an article object containing the correct properties", () => {
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article_id).toBe(1);
+        expect(body.title).toBe("Living in the shadow of a great man");
+        expect(body.topic).toBe("mitch");
+        expect(body.author).toBe("butter_bridge");
+        expect(body.body).toBe("I find this existence challenging");
+        expect(typeof body.created_at).toBe("string");
+        expect(body.votes).toBe(100);
+        expect(body.article_img_url).toBe(
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        );
+      });
+  });
+  test("GET 404 Responds with a status 400 when a request made for an article id that doesnt exist", () => {
+    return request(app)
+      .get("/api/articles/100")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Not Found");
+      });
+  });
+  test("GET 400 Responds with a status 400 when an invalid request made to the articles endpoint", () => {
+    return request(app)
+      .get("/api/articles/puppies")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
+});
