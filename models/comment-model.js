@@ -11,4 +11,18 @@ function fetchComments(id) {
     });
 }
 
-module.exports = { fetchComments };
+function insertComment(article_id, comment) {
+  const { body, author } = comment;
+  return db
+    .query(
+      `INSERT INTO comments (article_id, body, author) 
+      VALUES ($1, $2, $3) 
+      RETURNING *;`,
+      [article_id, body, author]
+    )
+    .then((result) => {
+      return result.rows[0];
+    });
+}
+
+module.exports = { fetchComments, insertComment };

@@ -1,4 +1,4 @@
-const { fetchComments } = require("../models/comment-model");
+const { fetchComments, insertComment } = require("../models/comment-model");
 const { checkArticleExists } = require("../models/article-model");
 
 function getComments(req, res, next) {
@@ -12,4 +12,16 @@ function getComments(req, res, next) {
     });
 }
 
-module.exports = { getComments };
+function postComment(req, res, next) {
+  const { article_id } = req.params;
+  const comment = req.body;
+  insertComment(article_id, comment)
+    .then((comment) => {
+      res.status(201).send(comment);
+    })
+    .catch((err) => {
+      next(err);
+    });
+}
+
+module.exports = { getComments, postComment };
