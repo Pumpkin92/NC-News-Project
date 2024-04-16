@@ -95,6 +95,8 @@ describe("/api/articles", () => {
           expect(typeof article.title).toBe("string");
           expect(typeof article.article_id).toBe("number");
           expect(typeof article.topic).toBe("string");
+          expect(typeof article.created_at).toBe("string");
+          expect(typeof article.votes).toBe("number");
           expect(typeof article.article_img_url).toBe("string");
           expect(typeof article.comment_count).toBe("number");
         });
@@ -125,6 +127,61 @@ describe("/api/articles", () => {
       .expect(200)
       .then(({ body }) => {
         expect(body[0].comment_count).toBe(2);
+      });
+  });
+});
+
+describe("/api/articles/:article_id/comments", () => {
+  test("Get 200 Responds with an array of comments for the selected article", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        console.log(body);
+        const { comments } = body;
+        expect(comments.length).toBe(11);
+        comments.forEach((comment) => {
+          expect(typeof comment.comment_id).toBe("number");
+          expect(typeof comment.votes).toBe("number");
+          expect(typeof comment.created_at).toBe("string");
+          expect(typeof comment.author).toBe("string");
+          expect(typeof comment.body).toBe("string");
+          expect(typeof comment.article_id).toBe("number");
+        });
+      });
+  });
+  test("GET 200 Responds with the array of comments sorted in descending order by date as the default", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  test("GET 404 Responds with a status code 404 and message 'not found' when passed an article id that doesnt exist in the database", () => {
+    return request(app)
+      .get("/api/articles/100/comments")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("article not found");
+      });
+  });
+  test("GET 400 Responds with a status code 400 and message 'bad request' when passed an invalid article id", () => {
+    return request(app)
+      .get("/api/articles/puppies/comments")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
+  test("GET 200 Responds with an empty array when passed a valid article id that contains no comments", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments.length).toBe(0);
       });
   });
 });
