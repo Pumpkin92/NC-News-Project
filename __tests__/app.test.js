@@ -183,4 +183,48 @@ describe("/api/articles/:article_id/comments", () => {
         expect(comments.length).toBe(0);
       });
   });
+  test("POST 201 Adds a new comment to the passed article id and responds with the new comment", () => {
+    const newComment = {
+      body: "This is a comment",
+      author: "icellusedkars",
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body).toEqual({
+          article_id: 2,
+          body: "This is a comment",
+          author: "icellusedkars",
+          comment_id: 19,
+          created_at: expect.any(String),
+          votes: 0,
+        });
+      });
+  });
+
+  test("POST 400 Responds with status 400 and bad request when passed a comment without all the required properties", () => {
+    const newComment = { body: "This is a comment" };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
+  test("POST 400 Responds with status 400 and bad request when a comment is posted in the incorrect format", () => {
+    const newComment = {
+      body: "This is a comment",
+      author: 23,
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
 });
