@@ -3,7 +3,6 @@ const { checkArticleExists } = require("../models/article-model");
 
 function getComments(req, res, next) {
   const { article_id } = req.params;
-  console.log(article_id);
   Promise.all([fetchComments(article_id), checkArticleExists(article_id)])
     .then(([comments]) => {
       res.status(200).send({ comments });
