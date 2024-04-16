@@ -81,6 +81,67 @@ describe("/api/articles/:article_id", () => {
         expect(response.body.msg).toBe("Bad request");
       });
   });
+
+  test("PATCH 200 Responds with passed article containing the correct number of votes when the votes are incremented", () => {
+    const patchedArticle = { inc_votes: 200 };
+    return request(app)
+      .patch("/api/articles/3")
+      .send(patchedArticle)
+      .expect(200)
+      .then(({ body }) => {
+        const { updatedComment } = body;
+        expect(updatedComment).toMatchObject({
+          title: "Eight pug gifs that remind me of mitch",
+          topic: "mitch",
+          author: "icellusedkars",
+          body: "some gifs",
+          created_at: expect.any(String),
+          votes: 200,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        });
+      });
+  });
+  test("PATCH 200 Responds with passed article containing the correct number of votes when the votes are decremented", () => {
+    const patchedArticle = { inc_votes: -500 };
+    return request(app)
+      .patch("/api/articles/3")
+      .send(patchedArticle)
+      .expect(200)
+      .then(({ body }) => {
+        const { updatedComment } = body;
+        expect(updatedComment).toMatchObject({
+          title: "Eight pug gifs that remind me of mitch",
+          topic: "mitch",
+          author: "icellusedkars",
+          body: "some gifs",
+          created_at: expect.any(String),
+          votes: -500,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        });
+      });
+  });
+  test("PATCH 400 Responds with status 400 when attempting to patch an article with an invalid id", () => {
+    const patchedArticle = { inc_votes: -500 };
+    return request(app)
+      .patch("/api/articles/puppies")
+      .send(patchedArticle)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
+  test("PATCH 404 Responds with status 400 when attempting to patch an article that doesnt exist in the database", () => {
+    const patchedArticle = { inc_votes: -500 };
+    return request(app)
+      .patch("/api/articles/3000")
+      .send(patchedArticle)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("article not found");
+      });
+  });
 });
 
 describe("/api/articles", () => {

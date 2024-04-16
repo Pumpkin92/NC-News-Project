@@ -5,6 +5,7 @@ const { getEndpoints } = require("./controllers/endpoint-controller");
 const {
   getArticleById,
   getArticles,
+  patchArticle,
 } = require("./controllers/article-controller");
 const {
   getComments,
@@ -24,6 +25,8 @@ app.get("/api/articles/:article_id/comments", getComments);
 app.use(express.json());
 
 app.post("/api/articles/:article_id/comments", postComment);
+
+app.patch("/api/articles/:article_id", patchArticle);
 
 app.all("*", (req, res, next) => {
   res.status(404).send({ msg: "endpoint not found" });
