@@ -39,8 +39,6 @@ function checkArticleExists(id) {
 }
 
 function insertArticle(inc_votes, article_id) {
-  console.log(inc_votes);
-  console.log(article_id);
   return db
     .query(
       `UPDATE articles 

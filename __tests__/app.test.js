@@ -110,7 +110,6 @@ describe("/api/articles/:article_id", () => {
       .expect(200)
       .then(({ body }) => {
         const { updatedComment } = body;
-        console.log(updatedComment);
         expect(updatedComment).toMatchObject({
           title: "Eight pug gifs that remind me of mitch",
           topic: "mitch",
