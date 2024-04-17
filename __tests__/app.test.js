@@ -190,6 +190,40 @@ describe("/api/articles", () => {
         expect(body[0].comment_count).toBe(2);
       });
   });
+  test("GET 200 Accepts a topic query and responds with an array of articles from that query", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.length).toBe(12);
+        body.forEach((article) => {
+          expect(article.topic).toBe("mitch");
+          expect(typeof article.author).toBe("string");
+          expect(typeof article.title).toBe("string");
+          expect(typeof article.article_id).toBe("number");
+          expect(typeof article.created_at).toBe("string");
+          expect(typeof article.votes).toBe("number");
+          expect(typeof article.article_img_url).toBe("string");
+          expect(typeof article.comment_count).toBe("number");
+        });
+      });
+  });
+  test("GET 200 Accepts a topic query and responds with a 200 when the article exists but there are no comments ", () => {
+    return request(app)
+      .get("/api/articles?topic=paper")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.length).toBe(0);
+      });
+  });
+  test("GET 404 Responds with an error message for a topic that is not in the database", () => {
+    return request(app)
+      .get("/api/articles?topic=puppies")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("not found");
+      });
+  });
 });
 
 describe("/api/articles/:article_id/comments", () => {

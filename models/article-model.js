@@ -10,21 +10,25 @@ function fetchArticleById(id) {
     });
 }
 
-function fetchArticles() {
-  return db
-    .query(
-      `SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.created_at, articles.votes, articles.article_img_url, 
+function fetchArticles(topic) {
+  let sqlStr = `SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.created_at, articles.votes, articles.article_img_url, 
       COUNT (comments.article_id)::int 
       AS comment_count 
       FROM articles 
       LEFT JOIN comments 
-      ON articles.article_id = comments.article_id 
-      GROUP BY articles.article_id 
-      ORDER BY articles.created_at DESC;`
-    )
-    .then(({ rows }) => {
-      return rows;
-    });
+      ON articles.article_id = comments.article_id `;
+  let queryVal = [];
+  if (topic) {
+    queryVal.push(topic);
+    sqlStr += `WHERE topic=$1 `;
+  }
+
+  sqlStr += `GROUP BY articles.article_id 
+      ORDER BY articles.created_at DESC;`;
+
+  return db.query(sqlStr, queryVal).then(({ rows }) => {
+    return rows;
+  });
 }
 
 function checkArticleExists(id) {
