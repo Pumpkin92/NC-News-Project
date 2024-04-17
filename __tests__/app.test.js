@@ -289,3 +289,25 @@ describe("/api/articles/:article_id/comments", () => {
       });
   });
 });
+
+describe("/api/comments/:comment_id", () => {
+  test("DELETE 204 Responds with a status 204 and no content", () => {
+    return request(app).delete("/api/comments/2").expect(204);
+  });
+  test("DELETE 404 Responds with a status 404 and errror message when attempting to delete a comment that doesnt exist", () => {
+    return request(app)
+      .delete("/api/comments/20000")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("comment not found");
+      });
+  });
+  test("DELETE 400 Responds with a status 400 and errror message when attempting to delete a comment with an invalid id", () => {
+    return request(app)
+      .delete("/api/comments/puppies")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
+});
