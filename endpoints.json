@@ -57,5 +57,8 @@
         }
       ]
     }
+  },
+  "DELETE /api/comments/comment_id": {
+    "description": "Deletes the comment through the id and returns no content"
   }
 }
