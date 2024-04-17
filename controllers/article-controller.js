@@ -4,6 +4,7 @@ const {
   insertArticle,
   checkArticleExists,
 } = require("../models/article-model");
+const { checkTopicExists } = require("../models/topic-model");
 
 function getArticleById(req, res, next) {
   const { article_id } = req.params;
@@ -17,8 +18,9 @@ function getArticleById(req, res, next) {
 }
 
 function getArticles(req, res, next) {
-  fetchArticles()
-    .then((result) => {
+  const { topic } = req.query;
+  Promise.all([fetchArticles(topic), checkTopicExists(topic)])
+    .then(([result]) => {
       res.status(200).send(result);
     })
     .catch((err) => {
