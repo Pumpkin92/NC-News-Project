@@ -82,6 +82,25 @@ describe("/api/articles/:article_id", () => {
       });
   });
 
+  test("GET 200 Responds with a total count of of all the comments with the passed article id", () => {
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article_id).toBe(1);
+        expect(body.title).toBe("Living in the shadow of a great man");
+        expect(body.topic).toBe("mitch");
+        expect(body.author).toBe("butter_bridge");
+        expect(body.body).toBe("I find this existence challenging");
+        expect(typeof body.created_at).toBe("string");
+        expect(body.votes).toBe(100);
+        expect(body.article_img_url).toBe(
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        );
+        expect(body.comment_count).toBe(11);
+      });
+  });
+
   test("PATCH 200 Responds with passed article containing the correct number of votes when the votes are incremented", () => {
     const patchedArticle = { inc_votes: 200 };
     return request(app)
