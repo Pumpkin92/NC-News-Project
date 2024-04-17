@@ -311,3 +311,30 @@ describe("/api/comments/:comment_id", () => {
       });
   });
 });
+
+describe("/api/users", () => {
+  test("GET 200 Responds with an array of objects containing all users", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        body.forEach((user) => {
+          expect(user).toEqual(
+            expect.objectContaining({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String),
+            })
+          );
+        });
+      });
+  });
+  test("GET 404 Responds with a 404 error and not found when URL does not match an endpoint", () => {
+    return request(app)
+      .get("/api/users!")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("endpoint not found");
+      });
+  });
+});
