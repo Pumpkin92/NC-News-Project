@@ -9,8 +9,8 @@ const { checkTopicExists } = require("../models/topic-model");
 function getArticleById(req, res, next) {
   const { article_id } = req.params;
   fetchArticleById(article_id)
-    .then((response) => {
-      res.status(200).send(response);
+    .then((article) => {
+      res.status(200).send({ article });
     })
     .catch((err) => {
       next(err);
@@ -20,8 +20,8 @@ function getArticleById(req, res, next) {
 function getArticles(req, res, next) {
   const { topic } = req.query;
   Promise.all([fetchArticles(topic), checkTopicExists(topic)])
-    .then(([result]) => {
-      res.status(200).send(result);
+    .then(([articles]) => {
+      res.status(200).send({ articles });
     })
     .catch((err) => {
       next(err);

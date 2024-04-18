@@ -48,7 +48,7 @@ function checkArticleExists(id) {
       if (articles.length === 0) {
         return Promise.reject({ status: 404, msg: "article not found" });
       }
-      return articles[0];
+      //return articles[0];
     });
 }
 

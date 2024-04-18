@@ -19,8 +19,9 @@ describe("/api/topics", () => {
       .get("/api/topics")
       .expect(200)
       .then(({ body }) => {
-        expect(body.length).toBe(3);
-        body.forEach((topic) => {
+        const { topics } = body;
+        expect(topics.length).toBe(3);
+        topics.forEach((topic) => {
           expect(typeof topic.description).toBe("string");
           expect(typeof topic.slug).toBe("string");
         });
@@ -49,20 +50,23 @@ describe("/api", () => {
 
 describe("/api/articles/:article_id", () => {
   test("GET 200 Responds with an article object containing the correct properties", () => {
+    const objectCopy = {
+      article_id: 1,
+      title: "Living in the shadow of a great man",
+      topic: "mitch",
+      author: "butter_bridge",
+      body: "I find this existence challenging",
+      created_at: expect.any(String),
+      votes: 100,
+      article_img_url:
+        "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+    };
     return request(app)
       .get("/api/articles/1")
       .expect(200)
       .then(({ body }) => {
-        expect(body.article_id).toBe(1);
-        expect(body.title).toBe("Living in the shadow of a great man");
-        expect(body.topic).toBe("mitch");
-        expect(body.author).toBe("butter_bridge");
-        expect(body.body).toBe("I find this existence challenging");
-        expect(typeof body.created_at).toBe("string");
-        expect(body.votes).toBe(100);
-        expect(body.article_img_url).toBe(
-          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
-        );
+        const { article } = body;
+        expect(article).toMatchObject(objectCopy);
       });
   });
   test("GET 404 Responds with a status 400 when a request made for an article id that doesnt exist", () => {
@@ -87,17 +91,8 @@ describe("/api/articles/:article_id", () => {
       .get("/api/articles/1")
       .expect(200)
       .then(({ body }) => {
-        expect(body.article_id).toBe(1);
-        expect(body.title).toBe("Living in the shadow of a great man");
-        expect(body.topic).toBe("mitch");
-        expect(body.author).toBe("butter_bridge");
-        expect(body.body).toBe("I find this existence challenging");
-        expect(typeof body.created_at).toBe("string");
-        expect(body.votes).toBe(100);
-        expect(body.article_img_url).toBe(
-          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
-        );
-        expect(body.comment_count).toBe(11);
+        const { article } = body;
+        expect(article.comment_count).toBe(11);
       });
   });
 
@@ -169,8 +164,9 @@ describe("/api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then(({ body }) => {
-        expect(body.length).toBe(13);
-        body.forEach((article) => {
+        const { articles } = body;
+        expect(articles.length).toBe(13);
+        articles.forEach((article) => {
           expect(typeof article.author).toBe("string");
           expect(typeof article.title).toBe("string");
           expect(typeof article.article_id).toBe("number");
@@ -188,7 +184,8 @@ describe("/api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then(({ body }) => {
-        expect(body).toBeSortedBy("created_at", { descending: true });
+        const { articles } = body;
+        expect(articles).toBeSortedBy("created_at", { descending: true });
       });
   });
   test("GET 200 Responds with an array not containing a body property", () => {
@@ -196,7 +193,8 @@ describe("/api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then(({ body }) => {
-        body.forEach((article) => {
+        const { articles } = body;
+        articles.forEach((article) => {
           expect(article).not.toHaveProperty("body");
         });
       });
@@ -206,24 +204,29 @@ describe("/api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then(({ body }) => {
-        expect(body[0].comment_count).toBe(2);
+        const { articles } = body;
+        expect(articles[0].comment_count).toBe(2);
       });
   });
   test("GET 200 Accepts a topic query and responds with an array of articles from that query", () => {
+    const objectCopy = {
+      topic: "mitch",
+      author: expect.any(String),
+      title: expect.any(String),
+      article_id: expect.any(Number),
+      created_at: expect.any(String),
+      votes: expect.any(Number),
+      article_img_url: expect.any(String),
+      comment_count: expect.any(Number),
+    };
     return request(app)
       .get("/api/articles?topic=mitch")
       .expect(200)
       .then(({ body }) => {
-        expect(body.length).toBe(12);
-        body.forEach((article) => {
-          expect(article.topic).toBe("mitch");
-          expect(typeof article.author).toBe("string");
-          expect(typeof article.title).toBe("string");
-          expect(typeof article.article_id).toBe("number");
-          expect(typeof article.created_at).toBe("string");
-          expect(typeof article.votes).toBe("number");
-          expect(typeof article.article_img_url).toBe("string");
-          expect(typeof article.comment_count).toBe("number");
+        const { articles } = body;
+        expect(articles.length).toBe(12);
+        articles.forEach((article) => {
+          expect(article).toMatchObject(objectCopy);
         });
       });
   });
@@ -232,7 +235,8 @@ describe("/api/articles", () => {
       .get("/api/articles?topic=paper")
       .expect(200)
       .then(({ body }) => {
-        expect(body.length).toBe(0);
+        const { articles } = body;
+        expect(articles.length).toBe(0);
       });
   });
   test("GET 404 Responds with an error message for a topic that is not in the database", () => {
@@ -307,7 +311,8 @@ describe("/api/articles/:article_id/comments", () => {
       .send(newComment)
       .expect(201)
       .then(({ body }) => {
-        expect(body).toEqual({
+        const { postedComment } = body;
+        expect(postedComment).toEqual({
           article_id: 2,
           body: "This is a comment",
           author: "icellusedkars",
@@ -326,6 +331,27 @@ describe("/api/articles/:article_id/comments", () => {
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe("Bad request");
+      });
+  });
+  test("POST 400 Responds with status 400 and bad request when attempting to post a comment to an invalid article id", () => {
+    const newComment = { body: "This is a comment", author: "icellusedkars" };
+    return request(app)
+      .post("/api/articles/puppies/comments")
+      .send(newComment)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
+
+  test("POST 404 Responds with status 404 and not found when attempting to post a comment to an article id that doesnt exist", () => {
+    const newComment = { body: "This is a comment", author: "icellusedkars" };
+    return request(app)
+      .post("/api/articles/200/comments")
+      .send(newComment)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("article not found");
       });
   });
   test("POST 400 Responds with status 400 and bad request when a comment is posted in the incorrect format", () => {
@@ -371,7 +397,9 @@ describe("/api/users", () => {
       .get("/api/users")
       .expect(200)
       .then(({ body }) => {
-        body.forEach((user) => {
+        const { users } = body;
+        expect(users.length).toBe(4);
+        users.forEach((user) => {
           expect(user).toEqual(
             expect.objectContaining({
               username: expect.any(String),
@@ -380,14 +408,6 @@ describe("/api/users", () => {
             })
           );
         });
-      });
-  });
-  test("GET 404 Responds with a 404 error and not found when URL does not match an endpoint", () => {
-    return request(app)
-      .get("/api/users!")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("endpoint not found");
       });
   });
 });

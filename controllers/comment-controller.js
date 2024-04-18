@@ -19,9 +19,12 @@ function getComments(req, res, next) {
 function postComment(req, res, next) {
   const { article_id } = req.params;
   const comment = req.body;
-  insertComment(article_id, comment)
+  Promise.all([
+    checkArticleExists(article_id),
+    insertComment(article_id, comment),
+  ])
     .then((comment) => {
-      res.status(201).send(comment);
+      res.status(201).send({ postedComment: comment[1] });
     })
     .catch((err) => {
       next(err);

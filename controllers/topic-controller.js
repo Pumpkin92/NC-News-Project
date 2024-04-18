@@ -2,8 +2,8 @@ const { fetchTopics } = require("../models/topic-model");
 
 function getTopics(req, res, next) {
   fetchTopics()
-    .then((result) => {
-      res.status(200).send(result);
+    .then((topics) => {
+      res.status(200).send({ topics });
     })
     .catch((err) => {
       next(err);

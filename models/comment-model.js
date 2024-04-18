@@ -20,8 +20,11 @@ function insertComment(article_id, comment) {
       RETURNING *;`,
       [article_id, body, author]
     )
-    .then((result) => {
-      return result.rows[0];
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "not found" });
+      }
+      return rows[0];
     });
 }
 
