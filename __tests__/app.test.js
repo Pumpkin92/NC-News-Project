@@ -247,6 +247,58 @@ describe("/api/articles", () => {
         expect(response.body.msg).toBe("not found");
       });
   });
+  test("GET 200 Responds with a 200 when passed a valid sort-by query ", () => {
+    return request(app)
+      .get("/api/articles?sort_by=votes")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toBeSortedBy("votes", { descending: true });
+      });
+  });
+  test("GET 200 Responds with default sorting if no query entered ", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toBeSortedBy("created_at", { coerce: true });
+      });
+  });
+  test("GET 400 Responds with a 400 if incorrect sorting criteria passed in ", () => {
+    return request(app)
+      .get("/api/articles?sort_by=puppies")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("invalid query value");
+      });
+  });
+  test("GET 200 Responds with a 200 when passed a valid order query ", () => {
+    return request(app)
+      .get("/api/articles?order=ASC")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toBeSortedBy("created_at", { coerce: true });
+      });
+  });
+  test("GET 200 Responds with default order if no query entered ", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  test("GET 400 Responds with a 400 if incorrect sorting criteria passed in ", () => {
+    return request(app)
+      .get("/api/articles?order=puppies")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("invalid query value");
+      });
+  });
 });
 
 describe("/api/articles/:article_id/comments", () => {
