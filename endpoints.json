@@ -91,7 +91,7 @@
     }
   },
   "DELETE /api/comments/comment_id": {
-    "description": "Deletes the comment through the id and returns no content"
+    "description": "Deletes the comment by the id and returns no content"
   },
   "GET /api/users": {
     "description": "serves an array of all users",
