@@ -462,4 +462,27 @@ describe("/api/users", () => {
         });
       });
   });
+  test("GET 200 Responds with an object containing information on the requested user", () => {
+    return request(app)
+      .get("/api/users/butter_bridge")
+      .expect(200)
+      .then(({ body }) => {
+        const { user } = body;
+        expect(user).toEqual(
+          expect.objectContaining({
+            username: "butter_bridge",
+            name: "jonny",
+            avatar_url:
+              "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+          })
+        );
+      });
+  });
+  test("GET 404 Responds with a 404 and error message when trying to request a username that doesnt not exist in the database", () => {
+    return request(app)
+      .get("/api/users/puppies")
+      .then((response) => {
+        expect(response.body.msg).toBe("Not Found");
+      });
+  });
 });

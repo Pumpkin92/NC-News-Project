@@ -101,5 +101,14 @@
       "name": "do_nothing",
       "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
     }
+  },
+  "GET /api/users/:username": {
+    "description": "serves an object of information on the requested user",
+    "queries": [],
+    "exampleResponse": {
+      "username": "lurker",
+      "name": "do_nothing",
+      "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
+    }
   }
 }
