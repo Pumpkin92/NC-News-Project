@@ -68,7 +68,7 @@ function checkArticleExists(id) {
     });
 }
 
-function insertArticle(inc_votes, article_id) {
+function updateArticle(inc_votes, article_id) {
   return db
     .query(
       `UPDATE articles 
@@ -82,9 +82,31 @@ function insertArticle(inc_votes, article_id) {
     });
 }
 
+function insertArticle(
+  title,
+  topic,
+  author,
+  body,
+  article_img_url = "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+) {
+  return db
+    .query(
+      `INSERT INTO articles (title, topic, author, body, article_img_url)
+  VALUES ($1, $2, $3, $4, $5)
+  RETURNING *;`,
+      [title, topic, author, body, article_img_url]
+    )
+    .then(({ rows }) => {
+      const article = rows[0];
+      article.comment_count = 0;
+      return article;
+    });
+}
+
 module.exports = {
   fetchArticleById,
   fetchArticles,
   checkArticleExists,
+  updateArticle,
   insertArticle,
 };

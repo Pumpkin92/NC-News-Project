@@ -90,8 +90,23 @@
       ]
     }
   },
-  "DELETE /api/comments/comment_id": {
+  "DELETE /api/comments/:comment_id": {
     "description": "Deletes the comment by the id and returns no content"
+  },
+  "PATCH /api/comment/:comment_id": {
+    "description": "increments or decrements the votes on a requested comment and returns the comment",
+    "queries": [],
+    "exampleResponse": {
+      "comments": [
+        {
+          "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+          "votes": 16,
+          "author": "butter_bridge",
+          "article_id": 9,
+          "created_at": 1586179020000
+        }
+      ]
+    }
   },
   "GET /api/users": {
     "description": "serves an array of all users",

@@ -3,6 +3,7 @@ const {
   fetchArticles,
   insertArticle,
   checkArticleExists,
+  updateArticle,
 } = require("../models/article-model");
 const { checkTopicExists } = require("../models/topic-model");
 
@@ -32,7 +33,7 @@ function patchArticle(req, res, next) {
   const { inc_votes } = req.body;
   const { article_id } = req.params;
   Promise.all([
-    insertArticle(inc_votes, article_id),
+    updateArticle(inc_votes, article_id),
     checkArticleExists(article_id),
   ])
     .then(([updatedComment]) => {
@@ -43,4 +44,15 @@ function patchArticle(req, res, next) {
     });
 }
 
-module.exports = { getArticleById, getArticles, patchArticle };
+function postArticle(req, res, next) {
+  const { title, topic, author, body, article_img_url } = req.body;
+  insertArticle(title, topic, author, body, article_img_url)
+    .then((postedArticle) => {
+      res.status(201).send({ postedArticle });
+    })
+    .catch((err) => {
+      next(err);
+    });
+}
+
+module.exports = { getArticleById, getArticles, patchArticle, postArticle };
