@@ -146,7 +146,7 @@ describe("/api/articles/:article_id", () => {
         expect(response.body.msg).toBe("Bad request");
       });
   });
-  test("PATCH 404 Responds with status 400 when attempting to patch an article that doesnt exist in the database", () => {
+  test("PATCH 404 Responds with status 404 when attempting to patch an article that doesnt exist in the database", () => {
     const patchedArticle = { inc_votes: -500 };
     return request(app)
       .patch("/api/articles/3000")
@@ -436,6 +436,60 @@ describe("/api/comments/:comment_id", () => {
   test("DELETE 400 Responds with a status 400 and errror message when attempting to delete a comment with an invalid id", () => {
     return request(app)
       .delete("/api/comments/puppies")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
+  test("PATCH 200 responds with the updated comment containing the increased vote count", () => {
+    const patchComment = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/comments/2")
+      .send(patchComment)
+      .expect(200)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment).toMatchObject({
+          body: "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+          votes: 15,
+          author: "butter_bridge",
+          article_id: 1,
+          created_at: expect.any(String),
+        });
+      });
+  });
+  test("PATCH 200 responds with the updated comment containing the decreased vote count", () => {
+    const patchComment = { inc_votes: -1 };
+    return request(app)
+      .patch("/api/comments/2")
+      .send(patchComment)
+      .expect(200)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment).toMatchObject({
+          body: "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+          votes: 13,
+          author: "butter_bridge",
+          article_id: 1,
+          created_at: expect.any(String),
+        });
+      });
+  });
+  test("PATCH 404 Responds with 404 and error message when passed a valid comment id thats not in the database", () => {
+    const patchComment = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/comments/2000")
+      .send(patchComment)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("comment not found");
+      });
+  });
+  test("PATCH 400 Responds with 400 and error message when passed an invalid comment id", () => {
+    const patchComment = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/comments/puppies")
+      .send(patchComment)
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe("Bad request");

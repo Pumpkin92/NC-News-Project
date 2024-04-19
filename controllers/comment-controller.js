@@ -2,6 +2,7 @@ const {
   fetchComments,
   insertComment,
   removeComment,
+  updateCommentVotes,
 } = require("../models/comment-model");
 const { checkArticleExists } = require("../models/article-model");
 
@@ -42,4 +43,16 @@ function deleteComment(req, res, next) {
     });
 }
 
-module.exports = { getComments, postComment, deleteComment };
+function patchComment(req, res, next) {
+  const { comment_id } = req.params;
+  const { inc_votes } = req.body;
+  updateCommentVotes(inc_votes, comment_id)
+    .then((comment) => {
+      res.status(200).send({ comment });
+    })
+    .catch((err) => {
+      next(err);
+    });
+}
+
+module.exports = { getComments, postComment, deleteComment, patchComment };
