@@ -299,6 +299,116 @@ describe("/api/articles", () => {
         expect(response.body.msg).toBe("invalid query value");
       });
   });
+  test("POST 201 Responds with an object containing the newly created article", () => {
+    const articlePost = {
+      title: "Test Article",
+      topic: "cats",
+      author: "butter_bridge",
+      body: "Text from the article..",
+      article_img_url:
+        "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(articlePost)
+      .expect(201)
+      .then(({ body }) => {
+        const { postedArticle } = body;
+        expect(postedArticle).toEqual(
+          expect.objectContaining({
+            article_id: 14,
+            title: "Test Article",
+            topic: "cats",
+            author: "butter_bridge",
+            body: "Text from the article..",
+            created_at: expect.any(String),
+            votes: 0,
+            comment_count: 0,
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          })
+        );
+      });
+  });
+  test("POST 201 Responds with article containing a default article image when not passed a value", () => {
+    const articlePost = {
+      title: "Test Article",
+      topic: "cats",
+      author: "butter_bridge",
+      body: "Text from the article..",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(articlePost)
+      .expect(201)
+      .then(({ body }) => {
+        const { postedArticle } = body;
+        expect(postedArticle).toEqual(
+          expect.objectContaining({
+            article_id: 14,
+            title: "Test Article",
+            topic: "cats",
+            author: "butter_bridge",
+            body: "Text from the article..",
+            created_at: expect.any(String),
+            votes: 0,
+            comment_count: 0,
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          })
+        );
+      });
+  });
+  test("POST 400 Responds with a 400 and error message when a post request is missing a required property", () => {
+    const articlePost = {
+      title: "Test Article",
+      author: "butter_bridge",
+      body: "Text from the article..",
+      article_img_url:
+        "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(articlePost)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
+  test("POST 400 Responds with a 400 and error message when a post request contains a topic that doesnt exist", () => {
+    const articlePost = {
+      title: "Test Article",
+      author: "butter_bridge",
+      topic: "coding",
+      body: "Text from the article..",
+      article_img_url:
+        "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(articlePost)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
+  test("POST 400 Responds with a 400 and error message when a post request contains an author that doesnt exist", () => {
+    const articlePost = {
+      title: "Test Article",
+      author: "Lucy",
+      topic: "cats",
+      body: "Text from the article..",
+      article_img_url:
+        "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(articlePost)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
 });
 
 describe("/api/articles/:article_id/comments", () => {
