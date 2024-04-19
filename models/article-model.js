@@ -20,7 +20,13 @@ function fetchArticleById(id) {
     });
 }
 
-function fetchArticles(topic, sort_by = "created_at", order = "DESC") {
+function fetchArticles(
+  topic,
+  sort_by = "created_at",
+  order = "DESC",
+  p,
+  limit = 10
+) {
   const validSortBy = [
     "created_at",
     "title",
@@ -31,15 +37,19 @@ function fetchArticles(topic, sort_by = "created_at", order = "DESC") {
     "body",
   ];
   const validOrder = ["ASC", "DESC"];
-  if (!validSortBy.includes(sort_by)) {
+  if (
+    !validSortBy.includes(sort_by) ||
+    !validOrder.includes(order) ||
+    !typeof limit === "number" ||
+    !typeof p === "number"
+  ) {
     return Promise.reject({ status: 400, msg: "invalid query value" });
   }
-  if (!validOrder.includes(order)) {
-    return Promise.reject({ status: 400, msg: "invalid query value" });
-  }
+
   let sqlStr = `SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.created_at, articles.votes, articles.article_img_url, 
       COUNT (comments.article_id)::int 
-      AS comment_count 
+      AS comment_count, 
+      COUNT (*) OVER() ::int AS total_count 
       FROM articles 
       LEFT JOIN comments 
       ON articles.article_id = comments.article_id `;
@@ -51,7 +61,11 @@ function fetchArticles(topic, sort_by = "created_at", order = "DESC") {
   }
 
   sqlStr += `GROUP BY articles.article_id 
-      ORDER BY ${sort_by} ${order};`;
+      ORDER BY ${sort_by} ${order}`;
+
+  if (p) {
+    sqlStr += ` LIMIT ${limit} OFFSET ${limit} * ${p - 1};`;
+  }
 
   return db.query(sqlStr, queryVal).then(({ rows }) => {
     return rows;
