@@ -79,6 +79,9 @@
       ]
     }
   },
+  "DELETE /api/articles/article_id": {
+    "description": "Deletes the article by the id and returns no content"
+  },
   "GET /api/articles/:article_id/comments": {
     "description": "serves an array of all comments associated with the passed article id",
     "queries": [],
