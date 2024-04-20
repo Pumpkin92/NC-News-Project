@@ -8,7 +8,11 @@ const { checkArticleExists } = require("../models/article-model");
 
 function getComments(req, res, next) {
   const { article_id } = req.params;
-  Promise.all([fetchComments(article_id), checkArticleExists(article_id)])
+  const { p, limit } = req.query;
+  Promise.all([
+    fetchComments(article_id, p, limit),
+    checkArticleExists(article_id),
+  ])
     .then(([comments]) => {
       res.status(200).send({ comments });
     })
