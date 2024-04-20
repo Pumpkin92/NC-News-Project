@@ -210,6 +210,25 @@ describe("/api/articles/:article_id", () => {
         expect(response.body.msg).toBe("article not found");
       });
   });
+  test("DELETE 204 Responds with a status 204 and no content when deleting an article", () => {
+    return request(app).delete("/api/articles/2").expect(204);
+  });
+  test("DELETE 404 Responds with a status 404 and errror message when attempting to delete an article that doesnt exist", () => {
+    return request(app)
+      .delete("/api/articles/20000")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("article not found");
+      });
+  });
+  test("DELETE 400 Responds with a status 400 and errror message when attempting to delete an article with an invalid id", () => {
+    return request(app)
+      .delete("/api/articles/puppies")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
 });
 
 describe("/api/articles", () => {

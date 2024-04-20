@@ -4,6 +4,7 @@ const {
   insertArticle,
   checkArticleExists,
   updateArticle,
+  removeArticle,
 } = require("../models/article-model");
 const { checkTopicExists } = require("../models/topic-model");
 
@@ -58,4 +59,21 @@ function postArticle(req, res, next) {
     });
 }
 
-module.exports = { getArticleById, getArticles, patchArticle, postArticle };
+function deleteArticle(req, res, next) {
+  const { article_id } = req.params;
+  removeArticle(article_id)
+    .then(() => {
+      res.status(204).send();
+    })
+    .catch((err) => {
+      next(err);
+    });
+}
+
+module.exports = {
+  getArticleById,
+  getArticles,
+  patchArticle,
+  postArticle,
+  deleteArticle,
+};
