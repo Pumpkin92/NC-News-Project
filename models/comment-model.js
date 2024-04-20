@@ -1,14 +1,20 @@
 const db = require("../db/connection");
 
-function fetchComments(id) {
-  return db
-    .query(
-      `SELECT * FROM comments WHERE comments.article_id = $1 ORDER BY comments.created_at DESC;`,
-      [id]
-    )
-    .then(({ rows }) => {
-      return rows;
-    });
+function fetchComments(id, p, limit = 10) {
+  if (!typeof limit === "number" || !typeof p === "number") {
+    return Promise.reject({ status: 400, msg: "invalid query value" });
+  }
+
+  let sqlStr = `SELECT * FROM comments 
+      WHERE comments.article_id = $1 
+      ORDER BY comments.created_at DESC`;
+
+  if (p) {
+    sqlStr += ` LIMIT ${limit} OFFSET ${limit} * ${p - 1};`;
+  }
+  return db.query(sqlStr, [id]).then(({ rows }) => {
+    return rows;
+  });
 }
 
 function insertComment(article_id, comment) {

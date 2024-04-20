@@ -95,6 +95,34 @@ describe("/api/articles/:article_id", () => {
         expect(article.comment_count).toBe(11);
       });
   });
+  test("GET 200 Responds with 10 comments by default when a page query is set", () => {
+    return request(app)
+      .get("/api/articles/1/comments?p=1")
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments.length).toBe(10);
+      });
+  });
+
+  test("GET 200 Responds with the correct number of articles when a limit is set", () => {
+    return request(app)
+      .get("/api/articles/1/comments?p=1&limit=6")
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments.length).toBe(6);
+      });
+  });
+
+  test("GET 400 Responds with 400 and error message if limit is not a number", () => {
+    return request(app)
+      .get("/api/articles/1/comments?p=2&limit=6a")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
 
   test("PATCH 200 Responds with passed article containing the correct number of votes when the votes are incremented", () => {
     const patchedArticle = { inc_votes: 200 };
