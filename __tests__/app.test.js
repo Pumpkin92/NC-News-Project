@@ -35,6 +35,32 @@ describe("/api/topics", () => {
         expect(body.msg).toBe("endpoint not found");
       });
   });
+  test("POST 201 Responds with an object containig the newly added topic", () => {
+    const topicPost = {
+      slug: "books",
+      description: "all about books",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(topicPost)
+      .expect(201)
+      .then(({ body }) => {
+        const { postedTopic } = body;
+        expect(postedTopic).toEqual(expect.objectContaining(postedTopic));
+      });
+  });
+  test("POST 400 Responds with a 400 and error message when a post topic request is missing a required property", () => {
+    const topicPost = {
+      slug: "crisps",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(topicPost)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Missing required properties");
+      });
+  });
 });
 
 describe("/api", () => {
